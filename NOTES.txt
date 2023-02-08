@@ -1,0 +1,81 @@
+First create dev and Prod environment namespaces using below command
+
+$kubectl create ns dev
+$kubectl create ns prod
+
+Now deploy application on both dev and prod environment using helm
+
+$helm install mywebapp-release-dev webapp/ --values webapp/values.yaml -f webapp/values-dev.yaml -n dev
+$helm install mywebapp-release-dev webapp/ --values webapp/values.yaml -f webapp/values-prod.yaml -n prod
+
+
+
+=============================================================================================
+Sample output for post application deployment is given below
+
+[node1 ~]$ helm ls --all-namespaces
+NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART           APP VERSION   
+mywebapp-release-dev    dev             1               2023-02-08 00:47:16.311573763 +0000 UTC deployed        webapp-0.1.0    1.16.0     
+mywebapp-release-dev    prod            1               2023-02-08 00:48:45.68752805 +0000 UTC  deployed        webapp-0.1.0    1.16.0     
+[node1 ~]$ 
+
+
+
+
+
+[node1 ~]$ kubectl get all -n dev
+NAME                             READY   STATUS    RESTARTS   AGE
+pod/myhelmapp-586dd7cc68-7kqf8   1/1     Running   0          2m47s
+pod/myhelmapp-586dd7cc68-d5f2n   1/1     Running   0          2m14s
+pod/myhelmapp-586dd7cc68-fp5nv   1/1     Running   0          2m47s
+pod/myhelmapp-586dd7cc68-vq8mn   1/1     Running   0          117s
+pod/myhelmapp-586dd7cc68-xgd7p   1/1     Running   0          2m47s
+
+NAME                TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/myhelmapp   NodePort   10.101.94.171   <none>        80:30555/TCP   2m47s
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/myhelmapp   5/5     5            5           2m47s
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/myhelmapp-586dd7cc68   5         5         5       2m47s
+
+
+
+
+
+[node1 ~]$ kubectl get all -n prod
+NAME                             READY   STATUS    RESTARTS   AGE
+pod/myhelmapp-586dd7cc68-g88td   1/1     Running   0          85s
+pod/myhelmapp-586dd7cc68-grw79   1/1     Running   0          85s
+pod/myhelmapp-586dd7cc68-rpnct   1/1     Running   0          85s
+pod/myhelmapp-586dd7cc68-x76n6   1/1     Running   0          85s
+pod/myhelmapp-586dd7cc68-xs4k9   1/1     Running   0          85s
+
+NAME                TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/myhelmapp   NodePort   10.99.44.107   <none>        80:32748/TCP   86s
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/myhelmapp   5/5     5            5           85s
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/myhelmapp-586dd7cc68   5         5         5       85s
+[node1 ~]$ 
+
+
+
+
+Now access the application in prod environment
+
+[node1 ~]$ curl localhost:32748
+<body style='background-color:#12181b;'>    <h1 style='color:#FFFFFF'>Welcome to Prod</h1>     <img src='https://raw.githubusercontent.com/devopsjourney1/assets/main/devops-journey-banner.png' alt='CUSTOMER_PHOTO'>    <h2 style='color:#FFFFFF;'>Hello World! Served from <b>myhelmapp-586dd7cc68-grw79</b></h2></body>[node1 ~]$ 
+
+
+
+
+Access the application in dev environment
+
+[node1 ~]$ curl localhost:30555
+<body style='background-color:#12181b;'>    <h1 style='color:#FFFFFF'>Welcome to Dev</h1>     <img src='https://raw.githubusercontent.com/devopsjourney1/assets/main/devops-journey-banner.png' alt='CUSTOMER_PHOTO'>    <h2 style='color:#FFFFFF;'>Hello World! Served from <b>myhelmapp-586dd7cc68-7kqf8</b></h2></body>[node1 ~]$ 
+[node1 ~]$ 
+

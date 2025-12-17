@@ -53,14 +53,10 @@ kubectl cluster-info
 🚀 Deployment Steps
 git clone https://github.com/prannoy10/Project-3-Basic_Helm_project_for-myweb_application.git
 cd Project-3-Basic_Helm_project_for-myweb_application
-
 helm install myweb-app .
 
 Upgrade:
-
 helm upgrade myweb-app .
-Uninstall:
 
-bash
-Copy code
+Uninstall:
 helm uninstall myweb-app
